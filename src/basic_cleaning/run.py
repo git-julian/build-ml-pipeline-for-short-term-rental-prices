@@ -13,6 +13,7 @@ import wandb
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
+
 def go(args):
     # Initialize a W&B run
     run = wandb.init(job_type="basic_cleaning")
@@ -34,6 +35,11 @@ def go(args):
     # Drop rows with missing values
     logger.info("Dropping rows with missing values")
     df = df.dropna()
+
+    # Drop rows outside the proper geolocation boundaries
+    logger.info("Filtering rows outside proper geolocation boundaries")
+    idx = df['longitude'].between(-74.25, -73.50) & df['latitude'].between(40.5, 41.2)
+    df = df[idx].copy()
 
     # Save the cleaned dataset
     output_file = "clean_sample.csv"
